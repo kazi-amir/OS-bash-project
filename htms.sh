@@ -218,7 +218,7 @@ add_appointment() {
     echo
     read -p "Choose Schedule Day: " day
     
-    schedule_day=$(grep "$did|$day|" $SCHEDULE_FILE)
+    schedule_day=$(grep "$did|$day|" $SCHEDULE_FILE) #Global Regular Expression Print(grep)
     time=$(echo "$schedule_day" | cut -d'|' -f3)
     
     echo "$aid|$pid|$did|$day|$time" >> $APPOINT_FILE

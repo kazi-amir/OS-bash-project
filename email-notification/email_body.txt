@@ -1,7 +1,0 @@
-Hello Admin,
-
-This is a system generated automated email sent by python. 
-Thanks for your cooperation. 
-
-Regards,
-System
