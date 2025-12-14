@@ -195,7 +195,8 @@ view_schedule() {
     if [ -z "$res" ]; then
         echo -e "${RED}Doctor not available.${NC}"
     else
-        echo -e "${CYAN}Available Time:${NC} $(echo $res | cut -d'|' -f3)"
+        echo -e "${CYAN}Available Time:${NC}"
+        echo "$res"
     fi
     read -p "Press Enter to return to Doctor Schedule Menu: " todo
 }
@@ -234,12 +235,12 @@ add_appointment() {
     cat $DOCTOR_FILE
     read -p "Enter Doctor ID: " did
     
-    echo "Doctors All Schedules: "
-    
     res=$(grep "$did|" $SCHEDULE_FILE)
     if [ -z "res" ]; then
     	echo -e "${RED}No Schedule Available for this doctor!${NC}"
     else
+	echo "Doctors All Schedules: "
+	echo "$res"
     	echo
     	read -p "Choose Schedule Day: " day
     
