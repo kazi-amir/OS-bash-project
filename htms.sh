@@ -78,7 +78,7 @@ view_patients() {
     cat $PATIENT_FILE
     echo
     echo
-    read -p "Press any key to return: " todo
+    read -p "Press Enter to return Patient Menu: " todo
 }
 
 search_patient() {
@@ -87,7 +87,7 @@ search_patient() {
     grep "$pid" $PATIENT_FILE || echo -e "${RED}Not found!${NC}"
     echo
     echo
-    read -p "Press any key to return: " todo
+    read -p "Press Enter to return Patient Menu: " todo
 }
 
 patient_menu() {
@@ -98,7 +98,7 @@ patient_menu() {
         echo "2. View"
         echo "3. Search"
         echo "4. Back"
-        read ch
+        read -p "Enter your choice: " ch
         case $ch in
             1) add_patient ;;
             2) view_patients ;;
@@ -127,7 +127,7 @@ add_doctor() {
 view_doctors() {
     echo -e "${CYAN}--- All Doctors Information: ---${NC}"
     cat $DOCTOR_FILE
-    read -p "Press any key to return: " todo
+    read -p "Press Enter to return to Doctors Menu: " todo
 }
 
 doctor_menu() {
@@ -137,7 +137,7 @@ doctor_menu() {
         echo "1. Add"
         echo "2. View"
         echo "3. Back"
-        read ch
+        read -p "Enter your choice: " ch
         case $ch in
             1) add_doctor ;;
             2) view_doctors ;;
@@ -176,7 +176,7 @@ view_schedule() {
         echo -e "${CYAN}Available Time:${NC} $(echo $res | cut -d'|' -f3)"
     fi
     
-    read -p "Press any key to return: " todo
+    read -p "Press Enter to return to Doctor Schedule Menu: " todo
 }
 
 schedule_menu() {
@@ -186,7 +186,7 @@ schedule_menu() {
         echo "1. Add Schedule"
         echo "2. View Schedule"
         echo "3. Back"
-        read ch
+        read -p "Enter your choice: " ch
         case $ch in
             1) add_schedule ;;
             2) view_schedule ;;
@@ -213,23 +213,27 @@ add_appointment() {
     
     echo "Doctors All Schedules: "
     
-    #Add a if else here
-    grep "$did|" $SCHEDULE_FILE || echo -e "${RED}No Schedule Available for this doctor!${NC}"
-    echo
-    read -p "Choose Schedule Day: " day
+    res=$(grep "$did|" $SCHEDULE_FILE)
+    if [ -z "res" ]; then
+    	echo -e "${RED}No Schedule Available for this doctor!${NC}"
+    	
+    else
+    	echo
+    	read -p "Choose Schedule Day: " day
     
-    schedule_day=$(grep "$did|$day|" $SCHEDULE_FILE) #Global Regular Expression Print(grep)
-    time=$(echo "$schedule_day" | cut -d'|' -f3)
+    	schedule_day=$(grep "$did|$day|" $SCHEDULE_FILE) #Global Regular Expression Print(grep)
+    	time=$(echo "$schedule_day" | cut -d'|' -f3)
     
-    echo "$aid|$pid|$did|$day|$time" >> $APPOINT_FILE
-    echo "$aid" > "appid.txt"
-    echo -e "${GREEN}Appointment added!${NC}"
-    sleep 1.0
+    	echo "$aid|$pid|$did|$day|$time" >> $APPOINT_FILE
+    	echo "$aid" > "appid.txt"
+    	echo -e "${GREEN}Appointment added!${NC}"
+    	sleep 1.0
+    fi
 }
 
 view_appointments() {
     cat $APPOINT_FILE
-    read -p "Press any key to return: " todo
+    read -p "Press Enter to return to  Appointment Menu: " todo
 }
 
 appointment_menu() {
@@ -239,7 +243,7 @@ appointment_menu() {
         echo "1. Add"
         echo "2. View"
         echo "3. Back"
-        read ch
+        read -p "Enter your choice: " ch
         case $ch in
             1) add_appointment ;;
             2) view_appointments ;;
@@ -265,7 +269,7 @@ add_history() {
 view_history() {
     read -p "Patient ID: " pid
     grep "$pid" $HISTORY_FILE || echo -e "${RED}No history found.${NC}"
-    read -p "Press any key to return: " todo
+    read -p "Press Enter to return to Medical History Menu: " todo
 }
 
 history_menu() {
@@ -275,7 +279,7 @@ history_menu() {
         echo "1. Add"
         echo "2. View"
         echo "3. Back"
-        read ch
+        read -p "Enter your choice: " ch
         case $ch in
             1) add_history ;;
             2) view_history ;;
@@ -298,21 +302,26 @@ add_medicine() {
 }
 
 view_inventory() {
+    echo "Current Inventory: "
     cat $INVENTORY_FILE
+    read -p "Press Enter to return to Inventory Menu: " todo
 }
 
 inventory_menu() {
     while true; do
+    	header
         echo -e "${BLUE}--- Inventory ---${NC}"
         echo "1. Add Medicine"
         echo "2. View Inventory"
         echo "3. Back"
-        read ch
+        read -p "Enter your choice: " ch
         case $ch in
             1) add_medicine ;;
             2) view_inventory ;;
-            3) break ;;
+            3) clear
+            	break ;;
         esac
+        clear
     done
 }
 
@@ -331,21 +340,26 @@ create_bill() {
 }
 
 view_bills() {
+    echo "All medical bills: "
     cat $BILL_FILE
+    read -p "Press Enter to return to Bills Menu: " todo
 }
 
 billing_menu() {
     while true; do
+    	header
         echo -e "${BLUE}--- Billing ---${NC}"
         echo "1. Create Bill"
         echo "2. View Bills"
         echo "3. Back"
-        read ch
+        read -p "Enter your choice: " ch
         case $ch in
             1) create_bill ;;
             2) view_bills ;;
-            3) break ;;
+            3) clear
+            	break ;;
         esac
+        clear
     done
 }
 
@@ -362,7 +376,7 @@ while true; do
     echo "6. Pharmaceutical Inventory"
     echo "7. Billing System"
     echo "8. Exit"
-    read choice
+    read -p "Enter your choice: " choice
     loading
     case $choice in
         1) patient_menu ;;
