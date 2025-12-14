@@ -35,6 +35,15 @@ loading() {
     echo -e "${NC}"
     clear
 }
+exit_screen() {
+    echo -ne "${YELLOW}Exiting the System!"
+    for i in {1..3}; do
+        echo -ne "."
+        sleep 0.3
+    done
+    echo -e "${NC}"
+    clear
+}
 
 header(){
     echo -e "${CYAN}================================${NC}"
@@ -74,7 +83,7 @@ add_patient() {
 
 view_patients() {
     echo -e "${CYAN}--- All Patient information:  ---${NC}"
-    #echo "All Patient information: "
+    echo "ID | Name | Age | Gender | Disease" 
     cat $PATIENT_FILE
     echo
     echo
@@ -84,7 +93,14 @@ view_patients() {
 search_patient() {
     read -p "Patient ID: " pid
     echo -e "${CYAN}--- Patient Information:   ---${NC}"
-    grep "$pid" $PATIENT_FILE || echo -e "${RED}Not found!${NC}"
+    res=$(grep "$pid" $PATIENT_FILE)
+     
+    if [ -z $res ]; then
+    	echo -e "${RED}Not found!${NC}"
+    else 
+    	echo "ID | Name | Age | Gender | Disease"
+    	echo "$res"
+    fi
     echo
     echo
     read -p "Press Enter to return Patient Menu: " todo
@@ -126,7 +142,12 @@ add_doctor() {
 
 view_doctors() {
     echo -e "${CYAN}--- All Doctors Information: ---${NC}"
-    cat $DOCTOR_FILE
+    if [ ! -s "$DOCTOR_FILE" ]; then # -s returns true if file is not empty. 
+    	echo "No Doctors Information Found!"
+    else
+    	echo "ID | Name | Specialty"
+    	cat $DOCTOR_FILE
+    fi
     read -p "Press Enter to return to Doctors Menu: " todo
 }
 
@@ -153,6 +174,7 @@ doctor_menu() {
 # =====================================
 add_schedule() {
     echo "All Doctors Information: "
+    echo "ID | Name | Specialty"
     cat $DOCTOR_FILE
     echo
     read -p "Enter Doctor ID: " did
@@ -165,17 +187,16 @@ add_schedule() {
 
 view_schedule() {
     echo "All Doctors Information: "
+    echo "ID | Name | Specialty"
     cat $DOCTOR_FILE
     echo
     read -p "Doctor ID: " did
-    read -p "Day: " day
-    res=$(grep "^$did|$day|" $SCHEDULE_FILE)
+    res=$(grep "$did|" $SCHEDULE_FILE)
     if [ -z "$res" ]; then
         echo -e "${RED}Doctor not available.${NC}"
     else
         echo -e "${CYAN}Available Time:${NC} $(echo $res | cut -d'|' -f3)"
     fi
-    
     read -p "Press Enter to return to Doctor Schedule Menu: " todo
 }
 
@@ -204,10 +225,12 @@ add_appointment() {
     aid=$(<appid.txt)
     aid=$(($aid + 1))
     echo "All Patients Information: "
+    echo "ID | Name | Age | Gender | Disease"
     cat $PATIENT_FILE
     read -p "Enter Patient ID: " pid
     
     echo "All Doctors Information: "
+    echo "ID | Name | Specialty"
     cat $DOCTOR_FILE
     read -p "Enter Doctor ID: " did
     
@@ -216,7 +239,6 @@ add_appointment() {
     res=$(grep "$did|" $SCHEDULE_FILE)
     if [ -z "res" ]; then
     	echo -e "${RED}No Schedule Available for this doctor!${NC}"
-    	
     else
     	echo
     	read -p "Choose Schedule Day: " day
@@ -232,6 +254,8 @@ add_appointment() {
 }
 
 view_appointments() {
+    echo "All the Appointments: "
+    echo "ID | Patient ID | Doctor ID | Day | Time"
     cat $APPOINT_FILE
     read -p "Press Enter to return to  Appointment Menu: " todo
 }
@@ -264,11 +288,18 @@ add_history() {
     read -p "Treatment: " treat
     echo "$pid|$date|$diag|$treat" >> $HISTORY_FILE
     echo -e "${GREEN}History added!${NC}"
+    sleep 1.0
 }
 
 view_history() {
     read -p "Patient ID: " pid
-    grep "$pid" $HISTORY_FILE || echo -e "${RED}No history found.${NC}"
+    res=$(grep "$pid" $HISTORY_FILE)
+    if [ -z "$res" ]; then
+    	echo -e "${RED}No history found.${NC}"
+    else
+    	echo "Patient ID | Date | Diagnosis | Treatment"
+    	echo "$res"
+    fi
     read -p "Press Enter to return to Medical History Menu: " todo
 }
 
@@ -294,15 +325,19 @@ history_menu() {
 # INVENTORY
 # =====================================
 add_medicine() {
-    read -p "Medicine ID: " mid
+    mid=$(<medid.txt)
+    mid=$((mid + 1))
     read -p "Name: " name
     read -p "Quantity: " qty
     echo "$mid|$name|$qty" >> $INVENTORY_FILE
+    echo "$mid" > "medid.txt"
     echo -e "${GREEN}Medicine added!${NC}"
+    sleep 1.0
 }
 
 view_inventory() {
     echo "Current Inventory: "
+    echo "ID | Name | Quantity"
     cat $INVENTORY_FILE
     read -p "Press Enter to return to Inventory Menu: " todo
 }
@@ -329,18 +364,22 @@ inventory_menu() {
 # BILLING
 # =====================================
 create_bill() {
-    read -p "Bill ID: " bid
+    bid=$(<billid.txt)
+    bid=$(($bid + 1))
     read -p "Patient ID: " pid
     read -p "Doctor Fee: " fee
     read -p "Medicine Cost: " med
     read -p "Other Charges: " other
     total=$((fee + med + other))
     echo "$bid|$pid|$total" >> $BILL_FILE
+    echo "$bid" > "billid.txt"
     echo -e "${GREEN}Bill Created. Total = $total${NC}"
+    sleep 1.0
 }
 
 view_bills() {
     echo "All medical bills: "
+    echo "Bill ID | Patient ID | Bill Amount"
     cat $BILL_FILE
     read -p "Press Enter to return to Bills Menu: " todo
 }
@@ -377,6 +416,10 @@ while true; do
     echo "7. Billing System"
     echo "8. Exit"
     read -p "Enter your choice: " choice
+    if [ $choice -eq 8 ]; then
+    	exit_screen
+    	exit
+    fi
     loading
     case $choice in
         1) patient_menu ;;

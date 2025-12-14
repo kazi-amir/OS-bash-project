@@ -1,0 +1,5 @@
+100|Napa|10
+101|Fexofenadin 20|20
+102|Paracitamol 10|15
+103|Napa Extra|20
+104|Antihistamin 10|30
