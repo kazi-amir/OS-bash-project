@@ -1,0 +1,8 @@
+101|Hamza|22|Male|Skin
+102|Amir|23|Male|Asthma
+103|Meawmeaw|3|Cat|Catnip
+104|meawMeaw|4|Cat|Cattas
+105|Moin|24|Male|Allergy
+106|Shikder|25|Male|MeawD
+107|Rayhan|23|male|Diabates
+108|Rayhan|23|Male|Skin
