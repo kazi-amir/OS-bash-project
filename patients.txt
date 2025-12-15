@@ -5,3 +5,4 @@
 108|Rayhan|23|Male|Skin
 109|Jubayer|23|Male|Allergy
 110|Niloy|24|Male|Pain
+111|Amir|22|Male|Skin
